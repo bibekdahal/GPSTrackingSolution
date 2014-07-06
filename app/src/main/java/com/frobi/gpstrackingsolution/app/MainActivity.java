@@ -1,20 +1,15 @@
 package com.frobi.gpstrackingsolution.app;
 
-import android.content.res.Resources;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
-import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 
 
@@ -82,10 +77,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.OnNavig
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        return id == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -97,7 +89,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.OnNavig
                 .commit();
         return true;
     }
-    
+
     /**
      * A placeholder fragment containing a simple view.
      */
