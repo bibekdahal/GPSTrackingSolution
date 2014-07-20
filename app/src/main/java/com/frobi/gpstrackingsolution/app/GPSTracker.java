@@ -112,6 +112,14 @@ public class GPSTracker extends Service implements
         Toast.makeText(m_context, "Connection Failure : " + connectionResult.getErrorCode(), Toast.LENGTH_SHORT).show();
     }
 
+    public void StoreData(){
+        /*
+        * **************************************
+        * Store the lat-long-time in database
+        * **************************************
+        */
+    }
+
     public boolean Update() {
         if (!m_locationClient.isConnected()) return false;
         if (!servicesConnected()) return false;
@@ -120,6 +128,8 @@ public class GPSTracker extends Service implements
             m_lastLatitude = currentLocation.getLatitude();
             m_lastLongitude = currentLocation.getLongitude();
             m_lastTime = currentLocation.getTime();
+
+            StoreData();
         }
         return true;
     }

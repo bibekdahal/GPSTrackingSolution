@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
@@ -56,6 +57,15 @@ public class MainActivity extends FragmentActivity implements GPSListener{
                 locationLabel.setText("Got connected....");
             }
         });
+
+        Button takePhotoBtn = (Button) findViewById(R.id.takePhoto);
+        takePhotoBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                PictureManager.TakePicture(MainActivity.this);
+            }
+        });
+
+
     }
 
     public void displayCurrentLocation(){
@@ -101,7 +111,10 @@ public class MainActivity extends FragmentActivity implements GPSListener{
     }
     @Override
     protected void onStop() {
-        if (!m_isBound)  return;
+        if (!m_isBound)  {
+            super.onStop();
+            return;
+        }
         UnbindService();
         super.onStop();
     }
