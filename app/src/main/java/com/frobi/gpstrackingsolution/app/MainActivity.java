@@ -14,8 +14,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+
+import static com.google.android.gms.maps.CameraUpdateFactory.*;
 
 
 public class MainActivity extends FragmentActivity implements GPSListener{
@@ -24,6 +34,7 @@ public class MainActivity extends FragmentActivity implements GPSListener{
     private boolean m_isBound;
 
     private TextView locationLabel;
+    private GoogleMap m_map;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +64,8 @@ public class MainActivity extends FragmentActivity implements GPSListener{
         connectBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 if (!m_isBound) { StartService(); return; }
-                m_gpsTracker.Connect();
-                locationLabel.setText("Got connected....");
+                //m_gpsTracker.Connect();
+                //locationLabel.setText("Got connected....");
             }
         });
 
@@ -66,8 +77,19 @@ public class MainActivity extends FragmentActivity implements GPSListener{
         });
 
 
+        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+        if (mapFragment!=null)
+        m_map = mapFragment.getMap();
+        Button toggleMapTypeBtn = (Button) findViewById(R.id.toggleMapType);
+        toggleMapTypeBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (m_map!=null)
+                    m_map.setMapType((m_map.getMapType()==GoogleMap.MAP_TYPE_NORMAL)?GoogleMap.MAP_TYPE_SATELLITE:GoogleMap.MAP_TYPE_NORMAL);
+            }
+        });
     }
 
+    private Marker m_marker = null;
     public void displayCurrentLocation(){
         if (!m_isBound) { StartService(); return; }
         String msg;
@@ -83,6 +105,12 @@ public class MainActivity extends FragmentActivity implements GPSListener{
 
         // Display the current location in the UI
         locationLabel.setText(msg);
+
+        if (m_map==null) return;
+        LatLng latlng = new LatLng(m_gpsTracker.GetLastLatitude(), m_gpsTracker.GetLastLongitude());
+        m_map.animateCamera(CameraUpdateFactory.newLatLngZoom(latlng, 17));
+        if (m_marker!=null) m_marker.remove();
+        m_marker = m_map.addMarker(new MarkerOptions().position(latlng).title("Current Position"));
     }
 
     @Override
@@ -147,6 +175,8 @@ public class MainActivity extends FragmentActivity implements GPSListener{
                                        IBinder service) {
             m_gpsTracker = ((GPSTracker.GPSBinder)service).getService();
             m_gpsTracker.Initialize(MainActivity.this, 5);
+            m_gpsTracker.Connect();
+            locationLabel.setText("Got connected....");
         }
         public void onServiceDisconnected(ComponentName arg0) {
             m_gpsTracker = null;
