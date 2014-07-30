@@ -8,22 +8,21 @@
     android:orientation="vertical">
 
 
-    <Button android:id="@+id/getLocation"
+    <Button android:id="@+id/panic"
+        android:layout_marginTop="15dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        style="@style/Button"
-        android:text="Get Location"/>
+        style="@style/PanicButton"
+        android:onClick="PanicButton_Click"
+        android:text="Panic"/>
+
 
     <Button android:id="@+id/connect"
+        android:layout_marginTop="30dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         style="@style/Button"
         android:text="Start Service"/>
-
-    <TextView
-        android:id="@+id/locationLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
 
     <Button android:id="@+id/takePhoto"
         android:layout_width="fill_parent"
@@ -32,16 +31,15 @@
         android:text="Take Photo"/>
 
 
+    <TextView
+        android:id="@+id/locationLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
     <fragment
         android:id="@+id/map"
         android:layout_width="fill_parent"
-        android:layout_height="180dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="20dp"
         android:name="com.google.android.gms.maps.MapFragment"/>
-
-    <Button android:id="@+id/toggleMapType"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        style="@style/Button"
-        android:text="Toggle Map Type"/>
 
 </LinearLayout>

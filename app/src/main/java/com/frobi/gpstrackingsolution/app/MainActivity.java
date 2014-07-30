@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -31,7 +32,7 @@ public class MainActivity extends FragmentActivity implements GPSListener{
     GPSTracker m_gpsTracker;
     private boolean m_isBound;
 
-    private TextView locationLabel;
+    private TextView m_locationLabel;
     private GoogleMap m_map;
 
     private final String START_TEXT = "Start Service";
@@ -48,17 +49,10 @@ public class MainActivity extends FragmentActivity implements GPSListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        m_locationLabel = (TextView) findViewById(R.id.locationLabel);
         m_isBound = false;
         if (GPSTracker.IsRunning()) StartService();
         UpdateUI();
-
-        locationLabel = (TextView) findViewById(R.id.locationLabel);
-        Button getLocationBtn = (Button) findViewById(R.id.getLocation);
-        getLocationBtn.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                displayCurrentLocation();
-            }
-        });
 
         final Button connectBtn = (Button) findViewById(R.id.connect);
         connectBtn.setOnClickListener(new View.OnClickListener() {
@@ -69,7 +63,7 @@ public class MainActivity extends FragmentActivity implements GPSListener{
                     if (!m_isBound) StartService();
                     m_gpsTracker.Disconnect();
                     StopService();
-                    locationLabel.setText("Got disconnected....");
+                    //m_locationLabel.setText("Got disconnected....");
                 }
                 UpdateUI();
             }
@@ -85,13 +79,6 @@ public class MainActivity extends FragmentActivity implements GPSListener{
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         if (mapFragment!=null)
         m_map = mapFragment.getMap();
-        Button toggleMapTypeBtn = (Button) findViewById(R.id.toggleMapType);
-        toggleMapTypeBtn.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                if (m_map != null)
-                    m_map.setMapType((m_map.getMapType() == GoogleMap.MAP_TYPE_NORMAL) ? GoogleMap.MAP_TYPE_SATELLITE : GoogleMap.MAP_TYPE_NORMAL);
-            }
-        });
     }
 
     private Marker m_marker = null;
@@ -109,7 +96,7 @@ public class MainActivity extends FragmentActivity implements GPSListener{
             msg = "FAILED";
 
         // Display the current location in the UI
-        locationLabel.setText(msg);
+        m_locationLabel.setText(msg);
 
         if (m_map==null) return;
         LatLng latlng = new LatLng(m_gpsTracker.GetLastLatitude(), m_gpsTracker.GetLastLongitude());
@@ -163,8 +150,14 @@ public class MainActivity extends FragmentActivity implements GPSListener{
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        return id == R.id.action_settings || super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.action_toggleMapType:
+                if (m_map != null)
+                    m_map.setMapType((m_map.getMapType() == GoogleMap.MAP_TYPE_NORMAL) ? GoogleMap.MAP_TYPE_SATELLITE : GoogleMap.MAP_TYPE_NORMAL);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
 
@@ -180,7 +173,7 @@ public class MainActivity extends FragmentActivity implements GPSListener{
             m_gpsTracker = ((GPSTracker.GPSBinder)service).getService();
             m_gpsTracker.Initialize(MainActivity.this, 5);
             m_gpsTracker.Connect();
-            locationLabel.setText("Got connected....");
+            m_locationLabel.setText("Got connected....");
             UpdateUI();
         }
         public void onServiceDisconnected(ComponentName arg0) {
@@ -213,13 +206,7 @@ public class MainActivity extends FragmentActivity implements GPSListener{
         UnbindService();
     }
 
-    private boolean IsServiceRunning() {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (GPSTracker.class.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
+    public void PanicButton_Click(View view) {
+        Toast.makeText(this, "PANICKED", Toast.LENGTH_SHORT).show();
     }
 }

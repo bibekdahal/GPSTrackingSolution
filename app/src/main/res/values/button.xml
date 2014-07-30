@@ -4,4 +4,9 @@
         <item name="android:textColor">#fff</item>
         <item name="android:background">@drawable/button</item>"
     </style>
+
+    <style name="PanicButton" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">#fff</item>
+        <item name="android:background">@drawable/panicbutton</item>"
+    </style>
 </resources>

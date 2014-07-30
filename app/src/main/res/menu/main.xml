@@ -4,15 +4,14 @@
     tools:context="com.frobi.gpstrackingsolution.app.MainActivity" >
 
 
-    <item android:id="@+id/action_home"
-        android:title="Home"
-        android:orderInCategory="0"
-        android:showAsAction="never" />
-
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
         android:orderInCategory="100"
         app:showAsAction="never" />
 
+    <item android:id="@+id/action_toggleMapType"
+        android:title="Toggle Map Type"
+        android:orderInCategory="10"
+        app:showAsAction="never" />
 
 </menu>
