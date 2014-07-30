@@ -31,6 +31,8 @@ public class GPSTracker extends Service implements
     private Context m_context;
     private double m_lastLatitude;
     private double m_lastLongitude;
+    private double m_lastSpeed;
+    private double m_lastDirection;
     private long m_lastTime;
     private GPSListener m_listener;
     private boolean m_started = false;
@@ -99,6 +101,12 @@ public class GPSTracker extends Service implements
     public double GetLastLongitude(){
         return m_lastLongitude;
     }
+    public double GetLastSpeed(){
+        return m_lastSpeed;
+    }
+    public double GetLastDirection(){
+        return m_lastDirection;
+    }
     public long GetLastTime(){
         return m_lastTime;
     }
@@ -136,6 +144,8 @@ public class GPSTracker extends Service implements
             m_lastLatitude = currentLocation.getLatitude();
             m_lastLongitude = currentLocation.getLongitude();
             m_lastTime = currentLocation.getTime();
+            m_lastSpeed = currentLocation.getSpeed();
+            m_lastDirection = currentLocation.getBearing();
 
             StoreData();
         }

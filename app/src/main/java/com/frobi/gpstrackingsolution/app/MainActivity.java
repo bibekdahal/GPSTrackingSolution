@@ -90,7 +90,9 @@ public class MainActivity extends FragmentActivity implements GPSListener{
             DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             msg =   "Current Location: " +
                     Double.toString(m_gpsTracker.GetLastLatitude()) + ", " +
-                    Double.toString(m_gpsTracker.GetLastLongitude()) + " at " + dateFormat.format(m_gpsTracker.GetLastTime());
+                    Double.toString(m_gpsTracker.GetLastLongitude()) + " at " + dateFormat.format(m_gpsTracker.GetLastTime())
+                    + "\nSpeed: " + Double.toString(m_gpsTracker.GetLastSpeed())
+                    + " Dir: " + Double.toString(m_gpsTracker.GetLastDirection());
         }
         else
             msg = "FAILED";
