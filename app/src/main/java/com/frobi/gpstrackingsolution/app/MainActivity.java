@@ -1,7 +1,10 @@
 package com.frobi.gpstrackingsolution.app;
 
 
+import android.app.ActivityManager;
+import android.app.FragmentManager;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -63,7 +66,7 @@ public class MainActivity extends FragmentActivity implements GPSListener{
         Button connectBtn = (Button) findViewById(R.id.connect);
         connectBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                if (!m_isBound) { StartService(); return; }
+                if (!m_isBound) StartService();
                 //m_gpsTracker.Connect();
                 //locationLabel.setText("Got connected....");
             }
@@ -76,15 +79,14 @@ public class MainActivity extends FragmentActivity implements GPSListener{
             }
         });
 
-
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         if (mapFragment!=null)
         m_map = mapFragment.getMap();
         Button toggleMapTypeBtn = (Button) findViewById(R.id.toggleMapType);
         toggleMapTypeBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                if (m_map!=null)
-                    m_map.setMapType((m_map.getMapType()==GoogleMap.MAP_TYPE_NORMAL)?GoogleMap.MAP_TYPE_SATELLITE:GoogleMap.MAP_TYPE_NORMAL);
+                if (m_map != null)
+                    m_map.setMapType((m_map.getMapType() == GoogleMap.MAP_TYPE_NORMAL) ? GoogleMap.MAP_TYPE_SATELLITE : GoogleMap.MAP_TYPE_NORMAL);
             }
         });
     }
@@ -206,5 +208,15 @@ public class MainActivity extends FragmentActivity implements GPSListener{
     protected void onDestroy() {
         super.onDestroy();
         UnbindService();
+    }
+
+    private boolean IsServiceRunning() {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (GPSTracker.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

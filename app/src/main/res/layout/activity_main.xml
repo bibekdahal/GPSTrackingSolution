@@ -11,16 +11,19 @@
     <Button android:id="@+id/getLocation"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        style="@style/Button"
         android:text="Get Location"/>
 
     <Button android:id="@+id/disconnect"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        style="@style/Button"
         android:text="Disconnect"/>
 
     <Button android:id="@+id/connect"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        style="@style/Button"
         android:text="Connect"/>
 
     <TextView
@@ -31,6 +34,7 @@
     <Button android:id="@+id/takePhoto"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        style="@style/Button"
         android:text="Take Photo"/>
 
 
@@ -43,6 +47,7 @@
     <Button android:id="@+id/toggleMapType"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        style="@style/Button"
         android:text="Toggle Map Type"/>
 
 </LinearLayout>
