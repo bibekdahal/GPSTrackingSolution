@@ -1,7 +1,6 @@
 package com.frobi.gpstrackingsolution.app;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.location.Location;
@@ -25,6 +24,9 @@ public class GPSTracker extends Service implements
         LocationListener,
         GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener {
+
+    private static boolean m_isRunning = false;
+    public static boolean IsRunning() { return m_isRunning; }
 
     private Context m_context;
     private double m_lastLatitude;
@@ -70,6 +72,8 @@ public class GPSTracker extends Service implements
         m_context = this;
         m_listener = listener;
         m_started = true;
+
+        m_isRunning = true;
     }
 
     @Override
@@ -80,11 +84,13 @@ public class GPSTracker extends Service implements
 
     public void Connect(){
         m_locationClient.connect();
+        m_isRunning = true;
     }
     public void Disconnect(){
         if (m_locationClient.isConnected())
             m_locationClient.removeLocationUpdates(this);
         m_locationClient.disconnect();
+        m_isRunning = false;
     }
 
     public double GetLastLatitude(){
@@ -100,12 +106,14 @@ public class GPSTracker extends Service implements
     @Override
     public void onConnected(Bundle dataBundle) {
         m_locationClient.requestLocationUpdates(m_locationRequest, this);
-        Toast.makeText(m_context, "Connected", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(m_context, "Connected", Toast.LENGTH_SHORT).show();
+        m_isRunning = true;
     }
     @Override
     public void onDisconnected() {
         m_locationClient.removeLocationUpdates(this);
         Toast.makeText(m_context, "Disconnected. Please re-connect.", Toast.LENGTH_SHORT).show();
+        m_isRunning = false;
     }
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {

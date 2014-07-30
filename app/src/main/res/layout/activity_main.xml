@@ -14,17 +14,11 @@
         style="@style/Button"
         android:text="Get Location"/>
 
-    <Button android:id="@+id/disconnect"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        style="@style/Button"
-        android:text="Disconnect"/>
-
     <Button android:id="@+id/connect"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         style="@style/Button"
-        android:text="Connect"/>
+        android:text="Start Service"/>
 
     <TextView
         android:id="@+id/locationLabel"

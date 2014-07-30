@@ -2,13 +2,11 @@ package com.frobi.gpstrackingsolution.app;
 
 
 import android.app.ActivityManager;
-import android.app.FragmentManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
@@ -20,15 +18,12 @@ import android.widget.TextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-
-import static com.google.android.gms.maps.CameraUpdateFactory.*;
 
 
 public class MainActivity extends FragmentActivity implements GPSListener{
@@ -39,36 +34,44 @@ public class MainActivity extends FragmentActivity implements GPSListener{
     private TextView locationLabel;
     private GoogleMap m_map;
 
+    private final String START_TEXT = "Start Service";
+    private final String STOP_TEXT = "Stop Service";
+    private void UpdateUI()
+    {
+        Button connectBtn = (Button) findViewById(R.id.connect);
+        if (GPSTracker.IsRunning()) connectBtn.setText(STOP_TEXT);
+        else connectBtn.setText(START_TEXT);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         m_isBound = false;
+        if (GPSTracker.IsRunning()) StartService();
+        UpdateUI();
 
         locationLabel = (TextView) findViewById(R.id.locationLabel);
         Button getLocationBtn = (Button) findViewById(R.id.getLocation);
-
         getLocationBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 displayCurrentLocation();
             }
         });
-        Button disconnectBtn = (Button) findViewById(R.id.disconnect);
-        disconnectBtn.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                if (!m_isBound) { StartService(); }
-                m_gpsTracker.Disconnect();
-                StopService();
-                locationLabel.setText("Got disconnected....");
-            }
-        });
-        Button connectBtn = (Button) findViewById(R.id.connect);
+
+        final Button connectBtn = (Button) findViewById(R.id.connect);
         connectBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                if (!m_isBound) StartService();
-                //m_gpsTracker.Connect();
-                //locationLabel.setText("Got connected....");
+                if (connectBtn.getText()==START_TEXT) {
+                    if (!m_isBound) StartService();
+                } else {
+                    if (!m_isBound) StartService();
+                    m_gpsTracker.Disconnect();
+                    StopService();
+                    locationLabel.setText("Got disconnected....");
+                }
+                UpdateUI();
             }
         });
 
@@ -137,7 +140,6 @@ public class MainActivity extends FragmentActivity implements GPSListener{
     @Override
     protected void onStart() {
         super.onStart();
-        if (!m_isBound) StartService();
     }
     @Override
     protected void onStop() {
@@ -179,6 +181,7 @@ public class MainActivity extends FragmentActivity implements GPSListener{
             m_gpsTracker.Initialize(MainActivity.this, 5);
             m_gpsTracker.Connect();
             locationLabel.setText("Got connected....");
+            UpdateUI();
         }
         public void onServiceDisconnected(ComponentName arg0) {
             m_gpsTracker = null;
