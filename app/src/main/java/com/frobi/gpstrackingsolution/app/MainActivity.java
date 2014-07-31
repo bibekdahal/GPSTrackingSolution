@@ -40,7 +40,7 @@ public class MainActivity extends FragmentActivity implements GPSListener{
     private final String STOP_TEXT = "Stop Service";
     private void UpdateUI()
     {
-        Button connectBtn = (Button) findViewById(R.id.connect);
+        Button connectBtn = (Button) findViewById(R.id.serviceStartStop);
         if (GPSTracker.IsRunning()) connectBtn.setText(STOP_TEXT);
         else connectBtn.setText(START_TEXT);
     }
@@ -55,7 +55,7 @@ public class MainActivity extends FragmentActivity implements GPSListener{
         if (GPSTracker.IsRunning()) StartService();
         UpdateUI();
 
-        final Button connectBtn = (Button) findViewById(R.id.connect);
+        final Button connectBtn = (Button) findViewById(R.id.serviceStartStop);
         connectBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 if (connectBtn.getText()==START_TEXT) {

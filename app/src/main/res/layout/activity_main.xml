@@ -21,12 +21,14 @@
         android:layout_marginTop="30dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
-        <Button android:id="@+id/connect"
+
+        <Button android:id="@+id/serviceStartStop"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="3"
             style="@style/Button"
             android:text="Start Service"/>
+
         <ImageButton
             android:id="@+id/takePhoto"
             android:layout_width="0dp"
@@ -35,6 +37,7 @@
             android:contentDescription="Take Photo"
             style="@style/Button"
             android:src="@drawable/ic_take_photo"/>
+
     </LinearLayout>
 
     <TextView
