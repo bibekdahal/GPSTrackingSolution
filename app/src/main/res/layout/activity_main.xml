@@ -16,20 +16,26 @@
         android:onClick="PanicButton_Click"
         android:text="Panic"/>
 
-
-    <Button android:id="@+id/connect"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_marginTop="30dp"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        style="@style/Button"
-        android:text="Start Service"/>
-
-    <Button android:id="@+id/takePhoto"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        style="@style/Button"
-        android:text="Take Photo"/>
-
+        android:layout_height="wrap_content">
+        <Button android:id="@+id/connect"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            style="@style/Button"
+            android:text="Start Service"/>
+        <ImageButton
+            android:id="@+id/takePhoto"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:contentDescription="Take Photo"
+            style="@style/Button"
+            android:src="@drawable/ic_take_photo"/>
+    </LinearLayout>
 
     <TextView
         android:id="@+id/locationLabel"

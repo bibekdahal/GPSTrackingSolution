@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -69,7 +70,7 @@ public class MainActivity extends FragmentActivity implements GPSListener{
             }
         });
 
-        Button takePhotoBtn = (Button) findViewById(R.id.takePhoto);
+        ImageButton takePhotoBtn = (ImageButton) findViewById(R.id.takePhoto);
         takePhotoBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 PictureManager.TakePicture(MainActivity.this);
