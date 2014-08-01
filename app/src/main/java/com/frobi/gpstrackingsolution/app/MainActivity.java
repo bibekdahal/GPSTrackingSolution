@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
@@ -158,6 +159,9 @@ public class MainActivity extends FragmentActivity implements GPSListener{
                 if (m_map != null)
                     m_map.setMapType((m_map.getMapType() == GoogleMap.MAP_TYPE_NORMAL) ? GoogleMap.MAP_TYPE_SATELLITE : GoogleMap.MAP_TYPE_NORMAL);
                 return true;
+            case R.id.action_logOut:
+                LogOut();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -211,5 +215,14 @@ public class MainActivity extends FragmentActivity implements GPSListener{
 
     public void PanicButton_Click(View view) {
         Toast.makeText(this, "PANICKED", Toast.LENGTH_SHORT).show();
+    }
+
+    public void LogOut() {
+        SharedPreferences settings = getSharedPreferences(RegisterActivity.PREFS_NAME, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("Email", "");
+        editor.putString("Password", "");
+        editor.commit();
+        finish();
     }
 }

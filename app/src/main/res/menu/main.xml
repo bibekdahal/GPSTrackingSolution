@@ -14,4 +14,9 @@
         android:orderInCategory="10"
         app:showAsAction="never" />
 
+    <item android:id="@+id/action_logOut"
+        android:title="Log Out"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+
 </menu>
