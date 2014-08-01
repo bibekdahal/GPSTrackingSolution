@@ -225,4 +225,10 @@ public class MainActivity extends FragmentActivity implements GPSListener{
         editor.commit();
         finish();
     }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        PictureManager.Result(requestCode, resultCode, data);
+    }
 }

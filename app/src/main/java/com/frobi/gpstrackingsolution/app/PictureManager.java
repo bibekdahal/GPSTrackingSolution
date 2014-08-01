@@ -16,21 +16,33 @@ public class PictureManager {
     static final int REQUEST_TAKE_PHOTO = 1;
     static final String IMAGE_DIRECTORY = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/GPSTrackerPhotos/";
 
+    private static String m_lastImageFileName = "";
     public static boolean TakePicture(Activity activity) {
         String imageFileName = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String file = IMAGE_DIRECTORY+imageFileName+".jpg";
+        String file = IMAGE_DIRECTORY + imageFileName + ".jpg";
         File newFile = new File(file);
         try {
             new File(newFile.getParent()).mkdirs();
             newFile.createNewFile();
-        } catch (IOException e) { return false; }
+        } catch (IOException e) {
+            return false;
+        }
 
         Uri outputFileUri = Uri.fromFile(newFile);
-
+        m_lastImageFileName = file;
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
         activity.startActivityForResult(cameraIntent, REQUEST_TAKE_PHOTO);
 
         return true;
+    }
+
+    public static void Result(int requestCode, int resultCode, Intent data) {
+        if (m_lastImageFileName.equals("")) return;
+        if (requestCode != 100 || resultCode != Activity.RESULT_OK) {
+            new File(m_lastImageFileName).delete();
+            m_lastImageFileName = "";
+        }
+
     }
 }
