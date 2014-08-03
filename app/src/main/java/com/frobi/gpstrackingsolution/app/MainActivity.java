@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
@@ -25,12 +26,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.net.ConnectException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 
 public class MainActivity extends FragmentActivity implements GPSListener{
-
     GPSTracker m_gpsTracker;
     private boolean m_isBound;
 
@@ -81,7 +82,24 @@ public class MainActivity extends FragmentActivity implements GPSListener{
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         if (mapFragment!=null)
         m_map = mapFragment.getMap();
+
+        //new Test().execute();
     }
+
+    /*private class Test extends AsyncTask<Void, Void, String>
+    {
+        @Override
+        protected String doInBackground(Void... voids) {
+            WebAccess access = new WebAccess(MainActivity.this);
+            access.Connect("test");
+            return access.GetResponse();
+        }
+
+        protected void onPostExecute(String response) {
+            TextView testLabel = (TextView) findViewById(R.id.testLabel);
+            testLabel.append(response);
+        }
+    }*/
 
     private Marker m_marker = null;
     public void displayCurrentLocation(){

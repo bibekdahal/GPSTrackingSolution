@@ -51,4 +51,8 @@
         android:layout_marginTop="20dp"
         android:name="com.google.android.gms.maps.MapFragment"/>
 
+    <TextView
+        android:id="@+id/testLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 </LinearLayout>
