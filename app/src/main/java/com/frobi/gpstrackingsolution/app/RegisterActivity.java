@@ -4,6 +4,8 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -17,17 +19,14 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.IOException;
 
 
 public class RegisterActivity extends Activity{
 
     public static final String PREFS_NAME = "GPSTrackerEmailsPreferences";
-
-
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            //"email:password"
-            "foo@example.com:hello", "bar@example.com:world"
-    };
 
     //Keep track of the login task to ensure we can cancel it if requested.
     private UserLoginTask m_authTask = null;
@@ -163,7 +162,7 @@ public class RegisterActivity extends Activity{
     }
 
 
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public class UserLoginTask extends AsyncTask<Void, Void, Integer> {
 
         private final String m_email;
         private final String m_password;
@@ -174,30 +173,27 @@ public class RegisterActivity extends Activity{
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
+        protected Integer doInBackground(Void... params) {
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
+                WebAccess access = new WebAccess();
+                access.Connect("check-email-password", m_email, m_password, "000");
+                String response = access.GetResponse();
+                if (response.contains("UNREGISTERED")) return 1;
+                else if (response.contains("REGISTERED BUT INVALID")) return 2;
+                else if (response.contains("REGISTERED AND VALID")) return 0;
+                else return -1;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return -1;
             }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(m_email)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(m_password);
-                }
-            }
-            return true;
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
+        protected void onPostExecute(final Integer retCode) {
             m_authTask = null;
-            showProgress(false);
+            if (retCode!=0) showProgress(false);
 
-            if (success) {
+            if (retCode==0) {
                 SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
                 SharedPreferences.Editor editor = settings.edit();
                 editor.putString("Email", m_email);
@@ -207,9 +203,14 @@ public class RegisterActivity extends Activity{
                 Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
                 startActivity(intent);
                 finish();
-            } else {
+            } else if (retCode==1) {
+                m_emailView.setError(getString(R.string.error_incorrect_email));
+                m_emailView.requestFocus();
+            } else if (retCode==2) {
                 m_passwordView.setError(getString(R.string.error_incorrect_password));
                 m_passwordView.requestFocus();
+            } else if (retCode==-1) {
+                Toast.makeText(RegisterActivity.this, getString(R.string.error_connection), Toast.LENGTH_SHORT).show();
             }
         }
 

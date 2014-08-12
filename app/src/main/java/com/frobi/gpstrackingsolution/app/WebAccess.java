@@ -12,7 +12,9 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,28 +25,18 @@ class WebAccess
     private HttpClient m_httpclient;
     private HttpPost m_request;
     private HttpResponse m_response;
-    private Context m_context;
 
-    public WebAccess(Context context)
-    {
-        m_context = context;
-    }
-
-    public void Connect(String addr,  List<NameValuePair> nameValuePairs) {
+    public void Connect(String addr,  List<NameValuePair> nameValuePairs) throws IOException {
         String url = HOST + addr;
-        try {
-            m_httpclient = new DefaultHttpClient();
-            m_request = new HttpPost(url);
-            if (nameValuePairs!=null)
-                m_request.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-            m_response = m_httpclient.execute(m_request);
-        } catch(Exception ignored){
-            Toast.makeText(m_context, "Error Connecting: " + url, Toast.LENGTH_SHORT).show();
-        }
+        m_httpclient = new DefaultHttpClient();
+        m_request = new HttpPost(url);
+        if (nameValuePairs!=null)
+            m_request.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+        m_response = m_httpclient.execute(m_request);
     }
-    public void Connect(String addr) { Connect(addr, null); }
+    public void Connect(String addr) throws IOException { Connect(addr, null); }
 
-    public void Connect(String addr, String email, String password, String imei) {
+    public void Connect(String addr, String email, String password, String imei) throws IOException {
         List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
         nameValuePairs.add(new BasicNameValuePair("email", email));
         nameValuePairs.add(new BasicNameValuePair("password", password));
