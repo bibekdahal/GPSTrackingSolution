@@ -9,6 +9,11 @@
         android:orderInCategory="100"
         app:showAsAction="never" />
 
+    <item android:id="@+id/action_showHistory"
+        android:title="Show History"
+        android:orderInCategory="8"
+        app:showAsAction="never" />
+
     <item android:id="@+id/action_toggleMapType"
         android:title="Toggle Map Type"
         android:orderInCategory="10"

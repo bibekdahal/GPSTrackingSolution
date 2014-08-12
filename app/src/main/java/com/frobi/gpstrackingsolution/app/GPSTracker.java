@@ -144,8 +144,6 @@ public class GPSTracker extends Service implements
             m_lastTime = currentLocation.getTime();
             m_lastSpeed = currentLocation.getSpeed();
             m_lastDirection = currentLocation.getBearing();
-
-            StoreData();
         }
         return true;
     }
@@ -154,6 +152,7 @@ public class GPSTracker extends Service implements
     public void onLocationChanged(Location location) {
         Update();
         if (m_listener!=null) m_listener.LocationChanged();
+        StoreData();
     }
 
     private final IBinder m_binder = new GPSBinder();

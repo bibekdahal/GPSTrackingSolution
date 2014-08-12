@@ -48,6 +48,9 @@ public class GPSHistory extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         if (db==null) return;
 
+        GPSData lastData = GetLastData();
+        if (lastData!=null && lastData.Equals(data)) return;
+
         ContentValues values = new ContentValues();
         values.put(KEY_LAT, data.GetLatitude());
         values.put(KEY_LONG, data.GetLongitude());
@@ -57,6 +60,24 @@ public class GPSHistory extends SQLiteOpenHelper {
 
         db.insert(TABLE_NAME, null, values);
         db.close();
+    }
+
+    public GPSData GetLastData() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        if (db==null) return null;
+
+        String selectQuery = "SELECT  * FROM " + TABLE_NAME;
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        if (cursor.moveToLast()) {
+            GPSData data = new GPSData();
+            data.SetLatitude(cursor.getDouble(1));
+            data.SetLongitude(cursor.getDouble(2));
+            data.SetSpeed(cursor.getDouble(3));
+            data.SetDirection(cursor.getDouble(4));
+            data.SetTime(cursor.getString(5));
+            return data;
+        }
+        return null;
     }
 
     public List<GPSData> GetAllData() {
@@ -69,10 +90,10 @@ public class GPSHistory extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 GPSData data = new GPSData();
-                data.SetLatitude(Double.parseDouble(cursor.getString(1)));
-                data.SetLongitude(Double.parseDouble(cursor.getString(2)));
-                data.SetSpeed(Double.parseDouble(cursor.getString(3)));
-                data.SetDirection(Double.parseDouble(cursor.getString(4)));
+                data.SetLatitude(cursor.getDouble(1));
+                data.SetLongitude(cursor.getDouble(2));
+                data.SetSpeed(cursor.getDouble(3));
+                data.SetDirection(cursor.getDouble(4));
                 data.SetTime(cursor.getString(5));
                 dataList.add(data);
             } while (cursor.moveToNext());
@@ -85,8 +106,9 @@ public class GPSHistory extends SQLiteOpenHelper {
         if (db==null) return -1;
         String countQuery = "SELECT  * FROM " + TABLE_NAME;
         Cursor cursor = db.rawQuery(countQuery, null);
+        int count = cursor.getCount();
         cursor.close();
-        return cursor.getCount();
+        return count;
     }
 
     public void DeleteAll() {

@@ -102,7 +102,7 @@ public class MainActivity extends FragmentActivity implements GPSListener{
     }*/
 
     private Marker m_marker = null;
-    public void displayCurrentLocation(){
+    public void DisplayCurrentLocation(){
         if (!m_isBound) { StartService(); return; }
         String msg;
         if (m_gpsTracker.Update())
@@ -169,9 +169,6 @@ public class MainActivity extends FragmentActivity implements GPSListener{
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
             case R.id.action_toggleMapType:
                 if (m_map != null)
@@ -179,6 +176,10 @@ public class MainActivity extends FragmentActivity implements GPSListener{
                 return true;
             case R.id.action_logOut:
                 LogOut();
+                return true;
+            case R.id.action_showHistory:
+                Intent intent = new Intent(this, HistoryActivity.class);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -188,7 +189,7 @@ public class MainActivity extends FragmentActivity implements GPSListener{
 
     @Override
     public void LocationChanged() {
-        displayCurrentLocation();
+        DisplayCurrentLocation();
     }
 
 
