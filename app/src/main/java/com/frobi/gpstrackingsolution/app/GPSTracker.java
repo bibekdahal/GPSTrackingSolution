@@ -129,11 +129,9 @@ public class GPSTracker extends Service implements
     }
 
     public void StoreData(){
-        /*
-        * **************************************
-        * Store the lat-long-time in database
-        * **************************************
-        */
+        GPSHistory history = new GPSHistory(this);
+        GPSData newData = new GPSData(m_lastLatitude, m_lastLongitude, m_lastSpeed, m_lastDirection, m_lastTime);
+        history.AddData(newData);
     }
 
     public boolean Update() {
