@@ -1,6 +1,5 @@
 package com.frobi.gpstrackingsolution.app;
 
-import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -16,10 +15,12 @@ import android.widget.TableRow.LayoutParams;
 import android.widget.TextView;
 
 
-public class HistoryActivity extends ActionBarActivity {
+public class HistoryActivity extends ActionBarActivity implements GPSListener {
 
     GPSHistory m_history;
     TableLayout m_tableLayout;
+    private static GPSTracker m_tracker;
+    public static void SetTracker(GPSTracker tracker) { m_tracker = tracker; }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +36,9 @@ public class HistoryActivity extends ActionBarActivity {
                 ShowData();
             }
         });
+
+        if (m_tracker != null && GPSTracker.IsRunning())
+            m_tracker.SetListener2(this);
     }
 
 
@@ -71,22 +75,26 @@ public class HistoryActivity extends ActionBarActivity {
                     + "\nSpeed: " + data.GetDataString(2)
                     + "\nDir: " + data.GetDataString(3);
             tv.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-            tv.setGravity(Gravity.CENTER);
-            tv.setTextSize(16);
-            //tv.setPadding(0, 5, 0, 5);
+            tv.setTextSize(14);
+            tv.setPadding(5, 5, 0, 5);
             tv.setText(txt);
             row.addView(tv);
 
             tv = new TextView(this);
-            txt = data.GetDataString(4);
-            tv.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+            txt = data.GetDataString(4).replace(' ', '\n');
+            tv.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
             tv.setGravity(Gravity.CENTER);
-            tv.setTextSize(16);
-            //tv.setPadding(0, 5, 0, 5);
+            tv.setTextSize(14);
             tv.setText(txt);
             row.addView(tv);
 
+            row.setBackgroundResource(R.drawable.cellshape);
             m_tableLayout.addView(row);
         }
+    }
+
+    @Override
+    public void LocationChanged() {
+        ShowData();
     }
 }

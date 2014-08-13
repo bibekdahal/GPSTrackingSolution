@@ -178,6 +178,7 @@ public class MainActivity extends FragmentActivity implements GPSListener{
                 LogOut();
                 return true;
             case R.id.action_showHistory:
+                HistoryActivity.SetTracker(m_gpsTracker);
                 Intent intent = new Intent(this, HistoryActivity.class);
                 startActivity(intent);
                 return true;

@@ -211,6 +211,17 @@ public class RegisterActivity extends Activity{
                 m_passwordView.requestFocus();
             } else if (retCode==-1) {
                 Toast.makeText(RegisterActivity.this, getString(R.string.error_connection), Toast.LENGTH_SHORT).show();
+
+                //////// REMOVE THIS ///////////
+                SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putString("Email", "NULLEMAIL");
+                editor.putString("Password", "NULLPASSWORD");
+                editor.commit();
+                Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+                ////////////////////////////////
             }
         }
 

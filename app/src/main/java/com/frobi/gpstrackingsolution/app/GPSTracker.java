@@ -35,6 +35,7 @@ public class GPSTracker extends Service implements
     private double m_lastDirection;
     private long m_lastTime;
     private GPSListener m_listener;
+    private GPSListener m_listerner2 = null;
     private boolean m_started = false;
 
     public static final int MILLISECONDS_PER_SECOND = 1000;
@@ -57,6 +58,10 @@ public class GPSTracker extends Service implements
 
         startForeground(1234, notification);
 
+    }
+
+    public void SetListener2(GPSListener listener){
+        m_listerner2 = listener;
     }
 
     public void Initialize(GPSListener listener, int updateIntervalInSeconds){
@@ -152,6 +157,7 @@ public class GPSTracker extends Service implements
     public void onLocationChanged(Location location) {
         Update();
         if (m_listener!=null) m_listener.LocationChanged();
+        if (m_listerner2!=null) m_listerner2.LocationChanged();
         StoreData();
     }
 
