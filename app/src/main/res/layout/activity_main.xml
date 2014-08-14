@@ -49,7 +49,7 @@
         android:layout_width="fill_parent"
         android:layout_height="150dp"
         android:layout_marginTop="20dp"
-        android:name="com.google.android.gms.maps.MapFragment"/>
+        android:name="com.google.android.gms.maps.SupportMapFragment"/>
 
     <TextView
         android:id="@+id/testLabel"

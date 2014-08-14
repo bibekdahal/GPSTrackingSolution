@@ -41,8 +41,7 @@ public class RegisterActivity extends Activity{
         super.onCreate(savedInstanceState);
 
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        if (!settings.getString("Email", "").equals(""))
-        {
+        if (!settings.getString("Email", "").equals("")) {
             Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
             startActivity(intent);
             finish();
