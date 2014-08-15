@@ -28,14 +28,13 @@ public class GPSTracker extends Service implements
     private static boolean m_isRunning = false;
     public static boolean IsRunning() { return m_isRunning; }
 
-    private Context m_context;
     private double m_lastLatitude;
     private double m_lastLongitude;
     private double m_lastSpeed;
     private double m_lastDirection;
     private long m_lastTime;
     private GPSListener m_listener;
-    private GPSListener m_listerner2 = null;
+    private GPSListener m_listener2 = null;
     private boolean m_started = false;
 
     public static final int MILLISECONDS_PER_SECOND = 1000;
@@ -61,7 +60,7 @@ public class GPSTracker extends Service implements
     }
 
     public void SetListener2(GPSListener listener){
-        m_listerner2 = listener;
+        m_listener2 = listener;
     }
 
     public void Initialize(GPSListener listener, int updateIntervalInSeconds){
@@ -76,7 +75,6 @@ public class GPSTracker extends Service implements
         m_locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         m_locationRequest.setFastestInterval(FAST_INTERVAL_CEILING_IN_MILLISECONDS);
         m_locationClient = new LocationClient(this, this, this);
-        m_context = this;
         m_listener = listener;
         m_started = true;
 
@@ -119,18 +117,18 @@ public class GPSTracker extends Service implements
     @Override
     public void onConnected(Bundle dataBundle) {
         m_locationClient.requestLocationUpdates(m_locationRequest, this);
-        //Toast.makeText(m_context, "Connected", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
         m_isRunning = true;
     }
     @Override
     public void onDisconnected() {
         m_locationClient.removeLocationUpdates(this);
-        Toast.makeText(m_context, "Disconnected. Please re-connect.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Disconnected. Please re-connect.", Toast.LENGTH_SHORT).show();
         m_isRunning = false;
     }
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-        Toast.makeText(m_context, "Connection Failure : " + connectionResult.getErrorCode(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Connection Failure : " + connectionResult.getErrorCode(), Toast.LENGTH_SHORT).show();
     }
 
     public void StoreData(){
@@ -157,7 +155,7 @@ public class GPSTracker extends Service implements
     public void onLocationChanged(Location location) {
         Update();
         if (m_listener!=null) m_listener.LocationChanged();
-        if (m_listerner2!=null) m_listerner2.LocationChanged();
+        if (m_listener2 !=null) m_listener2.LocationChanged();
         StoreData();
     }
 
@@ -188,7 +186,7 @@ public class GPSTracker extends Service implements
         }
     }*/
     private boolean servicesConnected() {
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(m_context);
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
         if (ConnectionResult.SUCCESS == resultCode) {
             Log.d("Location Updates", "Google Play services is available.");
             return true;

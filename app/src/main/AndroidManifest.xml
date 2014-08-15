@@ -36,6 +36,7 @@
             android:windowSoftInputMode="adjustResize|stateVisible" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -48,6 +49,10 @@
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyDUn8hZ5V_pl0b2WYCx_c7tJJOjv-2Tpsk" />
 
+        <activity
+            android:name="com.frobi.gpstrackingsolution.app.SettingsActivity"
+            android:label="@string/title_activity_settings" >
+        </activity>
     </application>
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->

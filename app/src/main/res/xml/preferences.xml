@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="Network and Data Storage" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="wifisynconly"
+            android:summary="Syncronize the stored data when connected to internet via Wi-Fi only"
+            android:title="Don&apos;t sync on mobile data" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="autosync"
+            android:summary="Syncronize stored data automatically to the server when Internet is available"
+            android:title="Auto Sync" />
+
+        <EditTextPreference
+            android:defaultValue="5"
+            android:key="interval"
+            android:inputType="number"
+            android:summary="Set the interval for consecutive location data storage"
+            android:title="Location storage interval (sec)" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Emergency Numbers (for panic)">
+        <EditTextPreference
+            android:key="emergencyno1"
+            android:inputType="phone"
+            android:title="Emergency Phone No. #1" />
+        <EditTextPreference
+            android:key="emergencyno2"
+            android:inputType="phone"
+            android:title="Emergency Phone No. #2" />
+        <EditTextPreference
+            android:key="emergencyno3"
+            android:inputType="phone"
+            android:title="Emergency Phone No. #3" />
+        <EditTextPreference
+            android:key="emergencyno4"
+            android:inputType="phone"
+            android:title="Emergency Phone No. #4" />
+    </PreferenceCategory>
+</PreferenceScreen>
