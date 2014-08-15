@@ -7,6 +7,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,5 +119,31 @@ public class GPSHistory extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         if (db!=null)
             db.delete(TABLE_NAME, null, null);
+    }
+
+    public String GetJSON() {
+        JSONArray array = new JSONArray();
+        List<GPSData> dataList = GetAllData();
+        for (GPSData data : dataList) {
+            JSONObject obj = new JSONObject();
+            try
+            {
+                obj.put("Latitude", data.GetLatitude());
+                obj.put("Longitude", data.GetLongitude());
+                obj.put("Speed", data.GetSpeed());
+                obj.put("Direction", data.GetDirection());
+                obj.put("Time", data.GetTime());
+                array.put(obj);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("History", array);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return obj.toString();
     }
 }
