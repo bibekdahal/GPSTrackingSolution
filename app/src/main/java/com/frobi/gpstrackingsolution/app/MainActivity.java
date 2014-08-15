@@ -1,14 +1,11 @@
 package com.frobi.gpstrackingsolution.app;
 
 
-import android.app.ActivityManager;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
@@ -85,24 +82,7 @@ public class MainActivity extends FragmentActivity implements GPSListener{
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.map);
         SupportMapFragment mapFragment = (SupportMapFragment) fragment;
         m_map = mapFragment.getMap();
-
-        //new Test().execute();
     }
-
-    /*private class Test extends AsyncTask<Void, Void, String>
-    {
-        @Override
-        protected String doInBackground(Void... voids) {
-            WebAccess access = new WebAccess(MainActivity.this);
-            access.Connect("test");
-            return access.GetResponse();
-        }
-
-        protected void onPostExecute(String response) {
-            TextView testLabel = (TextView) findViewById(R.id.testLabel);
-            testLabel.append(response);
-        }
-    }*/
 
     private Marker m_marker = null;
     public void DisplayCurrentLocation(){
@@ -120,7 +100,6 @@ public class MainActivity extends FragmentActivity implements GPSListener{
         else
             msg = "FAILED";
 
-        // Display the current location in the UI
         m_locationLabel.setText(msg);
 
         if (m_map==null) return;
@@ -136,17 +115,16 @@ public class MainActivity extends FragmentActivity implements GPSListener{
     }
     @Override
     public void onResume() {
+        UpdateUI();
         super.onResume();
     }
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
-
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-
     }
 
     @Override
@@ -185,11 +163,15 @@ public class MainActivity extends FragmentActivity implements GPSListener{
                 Intent intent = new Intent(this, HistoryActivity.class);
                 startActivity(intent);
                 return true;
+            case R.id.action_settings:
+                SettingsActivity.SetMainActivity(this);
+                intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
-
 
     @Override
     public void LocationChanged() {
@@ -198,10 +180,9 @@ public class MainActivity extends FragmentActivity implements GPSListener{
 
 
     private ServiceConnection m_gpsConnection = new ServiceConnection() {
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
+        public void onServiceConnected(ComponentName className, IBinder service) {
             m_gpsTracker = ((GPSTracker.GPSBinder)service).getService();
-            m_gpsTracker.Initialize(MainActivity.this, 5);
+            m_gpsTracker.Initialize(MainActivity.this, SettingsActivity.GetIntSetting("interval", 5, MainActivity.this));
             m_gpsTracker.Connect();
             m_locationLabel.setText("Got connected....");
             UpdateUI();
@@ -211,6 +192,16 @@ public class MainActivity extends FragmentActivity implements GPSListener{
         }
     };
 
+    private class DoRestart extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            while (m_isBound || GPSTracker.IsRunning()) ;
+            StartService();
+            return null;
+        }
+    }
+
+
     private void UnbindService(){
         if (m_isBound) {
             unbindService(m_gpsConnection);
@@ -218,16 +209,23 @@ public class MainActivity extends FragmentActivity implements GPSListener{
         }
     }
 
+    public void RestartService() {
+        if (!GPSTracker.IsRunning()) return;
+        m_gpsTracker.Disconnect();
+        StopService();
+        new DoRestart().execute();
+    }
+
     private void StartService(){
         Intent objIntent = new Intent(this,  GPSTracker.class);
         startService(objIntent);
-        bindService(objIntent, m_gpsConnection, BIND_AUTO_CREATE);
+        bindService(objIntent, m_gpsConnection, BIND_NOT_FOREGROUND);
         m_isBound = true;
     }
 
     private void StopService(){
         UnbindService();
-        stopService(new Intent(this, GPSTracker.class));
+        stopService(new Intent(MainActivity.this, GPSTracker.class));
     }
 
     @Override
