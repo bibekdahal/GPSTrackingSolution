@@ -219,7 +219,7 @@ public class MainActivity extends FragmentActivity implements GPSListener{
     private void StartService(){
         Intent objIntent = new Intent(this,  GPSTracker.class);
         startService(objIntent);
-        bindService(objIntent, m_gpsConnection, BIND_AUTO_CREATE);
+        bindService(objIntent, m_gpsConnection, BIND_NOT_FOREGROUND);
         m_isBound = true;
     }
 
