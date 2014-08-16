@@ -6,5 +6,7 @@
     <string name="error_connection">Error Connecting. Please try later.</string>
     <string name="title_activity_history">HistoryActivity</string>
     <string name="clear_history">Clear History</string>
+    <string name="sync_data">Sync Data</string>
+    <string name="refresh">Refresh</string>
 
 </resources>

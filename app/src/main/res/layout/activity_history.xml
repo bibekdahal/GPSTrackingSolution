@@ -9,20 +9,6 @@
     tools:context="com.frobi.gpstrackingsolution.app.HistoryActivity"
     android:orientation="vertical">
 
-    <Button
-        android:id="@+id/refreshHistory"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/Button"
-        android:text="Refresh"/>
-
-    <Button
-        android:id="@+id/syncHistory"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/Button"
-        android:text="Sync"/>
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

@@ -199,6 +199,9 @@ public class MainActivity extends FragmentActivity implements GPSListener{
                 Intent intent = new Intent(this, HistoryActivity.class);
                 startActivity(intent);
                 return true;
+            case R.id.action_syncData:
+                HistoryActivity.SyncData(this);
+                return true;
             case R.id.action_settings:
                 SettingsActivity.SetMainActivity(this);
                 intent = new Intent(this, SettingsActivity.class);

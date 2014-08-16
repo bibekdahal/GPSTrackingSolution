@@ -160,7 +160,9 @@ public class GPSHistory extends SQLiteOpenHelper {
         return dataList;
     }
 
+    List<Integer> m_lastGotData;
     public List<GPSData> GetNewData() {
+        m_lastGotData = new ArrayList<Integer>();
         SQLiteDatabase db = this.getReadableDatabase();
         if (db==null) return null;
 
@@ -179,6 +181,7 @@ public class GPSHistory extends SQLiteOpenHelper {
                     data.SetDirection(cursor.getDouble(4));
                     data.SetTime(cursor.getString(5));
                     dataList.add(data);
+                    m_lastGotData.add(data.GetId());
                 }
             } while (cursor.moveToNext());
         }
@@ -190,7 +193,9 @@ public class GPSHistory extends SQLiteOpenHelper {
         if (db==null) return;
         ContentValues values = new ContentValues();
         values.put(KEY_UPLOADED, 1);
-        db.update(TABLE_NAME, values, null, null);
+        for (Integer i: m_lastGotData)
+            db.update(TABLE_NAME, values, KEY_ID+"="+i.toString(), null);
+        m_lastGotData = null;
     }
 
     public void SetUpdateAllImages(){

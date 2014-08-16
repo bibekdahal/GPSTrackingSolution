@@ -38,30 +38,19 @@ public class HistoryActivity extends ActionBarActivity implements GPSListener {
         m_tableLayout = (TableLayout) findViewById(R.id.historyTable);
         ShowData();
 
-        findViewById(R.id.refreshHistory).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ShowData();
-            }
-        });
-
-        findViewById(R.id.syncHistory).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SyncData(HistoryActivity.this);
-                ShowData();
-            }
-        });
-
         if (m_tracker != null && GPSTracker.IsRunning())
             m_tracker.SetListener2(this);
     }
 
     public static void SyncData(Context context) {
+        if (SyncAll.IsSyncing()) return;
         new SyncAll(context).execute();
     }
 
     private static class SyncAll extends AsyncTask<Void, Void, Void> {
+        private static boolean m_isSyncing;
+        public static boolean IsSyncing() { return m_isSyncing; }
+
         private String response;
         private GPSHistory m_history;
         private Context m_context;
@@ -69,6 +58,7 @@ public class HistoryActivity extends ActionBarActivity implements GPSListener {
         public SyncAll(Context context) {
             m_context = context;
             m_history = new GPSHistory(m_context);
+            m_isSyncing = true;
         }
         @Override
         protected Void doInBackground(Void... voids) {
@@ -103,6 +93,7 @@ public class HistoryActivity extends ActionBarActivity implements GPSListener {
                 m_history.SetUpdateAll();
                 m_history.SetUpdateAllImages();
             }
+            m_isSyncing = false;
         }
     }
 
@@ -121,7 +112,15 @@ public class HistoryActivity extends ActionBarActivity implements GPSListener {
             PictureManager.DeleteAllImages();
             ShowData();
             return true;
+        } else if (id==R.id.action_refresh) {
+            ShowData();
+            return true;
+        } else if (id==R.id.action_syncData) {
+            SyncData(this);
+            ShowData();
+            return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 

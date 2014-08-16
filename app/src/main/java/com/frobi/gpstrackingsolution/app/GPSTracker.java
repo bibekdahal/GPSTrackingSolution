@@ -4,6 +4,9 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.location.Location;
+import android.media.audiofx.BassBoost;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -137,7 +140,27 @@ public class GPSTracker extends Service implements
         history.AddData(newData);
     }
 
+    private boolean IsNetworkAvailable(boolean onlyWifi) {
+        ConnectivityManager manager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo nt = manager.getActiveNetworkInfo();
+        if (nt != null && nt.isConnected()) {
+            if (onlyWifi) {
+                NetworkInfo ntwifi = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+                return (ntwifi != null && ntwifi.isConnected());
+            }
+            return true;
+        }
+        return false;
+    }
+    private void TrySync() {
+        if (!SettingsActivity.GetBoolSetting("autosync", false, this)) return;
+        if (IsNetworkAvailable(SettingsActivity.GetBoolSetting("wifisynconly", true, this))){
+            HistoryActivity.SyncData(this);
+        }
+    }
+
     public boolean Update() {
+        TrySync();
         if (!m_locationClient.isConnected()) return false;
         if (!servicesConnected()) return false;
         Location currentLocation = m_locationClient.getLastLocation();
