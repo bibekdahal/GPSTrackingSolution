@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 public class GPSData {
     private double m_latitude, m_longitude, m_speed, m_direction;
     private String m_time;
+    private int m_localid;
 
     public GPSData() {}
     public GPSData(double latitude, double longitude, double speed, double direction, long time) {
@@ -27,6 +28,8 @@ public class GPSData {
     public String GetTime() { return m_time; }
     public void SetTime(String time) { m_time=time; }
     public void SetTime(long time) { m_time=ConvertTimeToString(time); }
+    public int GetId() { return m_localid; }
+    public void SetId(int id) { m_localid=id; }
 
     public static String ConvertTimeToString(long time) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

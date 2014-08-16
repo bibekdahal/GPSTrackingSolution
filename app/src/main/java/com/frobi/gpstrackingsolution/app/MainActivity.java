@@ -51,10 +51,12 @@ public class MainActivity extends FragmentActivity implements GPSListener{
         if (GPSTracker.IsRunning()) {
             connectBtn.setText(STOP_TEXT);
             takePhotoBtn.setEnabled(true);
+            takePhotoBtn.setClickable(true);
         }
         else {
             connectBtn.setText(START_TEXT);
             takePhotoBtn.setEnabled(false);
+            takePhotoBtn.setClickable(false);
         }
     }
 
@@ -293,6 +295,11 @@ public class MainActivity extends FragmentActivity implements GPSListener{
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        PictureManager.Result(this, requestCode, resultCode, data);
+        String filename = PictureManager.Result(this, requestCode, resultCode, data);
+        if (!filename.equals("")) {
+            GPSHistory db = new GPSHistory(this);
+            db.AddImage(filename);
+            Toast.makeText(this, "Image added successfully", Toast.LENGTH_SHORT).show();
+        }
     }
 }

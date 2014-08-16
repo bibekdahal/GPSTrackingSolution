@@ -1,24 +1,29 @@
 package com.frobi.gpstrackingsolution.app;
 
-import android.content.Context;
-import android.widget.Toast;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.ContentBody;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,5 +76,26 @@ class WebAccess
             e.printStackTrace();
         }
         return "";
+    }
+
+
+    public boolean UploadFile(String addr, String filepath, int historyId, String email, String password, String imei) throws IOException {
+        m_httpclient = new DefaultHttpClient();
+        m_httpclient.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
+
+        m_request = new HttpPost(HOST + addr);
+        File file = new File(filepath);
+
+        MultipartEntity mpEntity = new MultipartEntity();
+        ContentBody cbFile = new FileBody(file);
+        mpEntity.addPart("userfile", cbFile);
+        mpEntity.addPart("historyId", new StringBody(Integer.toString(historyId)));
+        mpEntity.addPart("email", new StringBody(email));
+        mpEntity.addPart("password", new StringBody(password));
+        mpEntity.addPart("imei", new StringBody(imei));
+
+        m_request.setEntity(mpEntity);
+        m_response = m_httpclient.execute(m_request);
+        return true;
     }
 }

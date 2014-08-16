@@ -1,8 +1,11 @@
 package com.frobi.gpstrackingsolution.app;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,6 +14,7 @@ import android.webkit.WebView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -44,7 +48,7 @@ public class HistoryActivity extends ActionBarActivity implements GPSListener {
         findViewById(R.id.syncHistory).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new PostJSON().execute();
+                SyncData(HistoryActivity.this);
                 ShowData();
             }
         });
@@ -53,24 +57,52 @@ public class HistoryActivity extends ActionBarActivity implements GPSListener {
             m_tracker.SetListener2(this);
     }
 
-    private class PostJSON extends AsyncTask<Void, Void, Void> {
+    public static void SyncData(Context context) {
+        new SyncAll(context).execute();
+    }
+
+    private static class SyncAll extends AsyncTask<Void, Void, Void> {
         private String response;
+        private GPSHistory m_history;
+        private Context m_context;
+
+        public SyncAll(Context context) {
+            m_context = context;
+            m_history = new GPSHistory(m_context);
+        }
         @Override
         protected Void doInBackground(Void... voids) {
             WebAccess access = new WebAccess();
+            response = "ERROR";
             try {
+                SharedPreferences settings = m_context.getSharedPreferences(RegisterActivity.PREFS_NAME, 0);
+                TelephonyManager telephonyManager = (TelephonyManager)m_context.getSystemService(Context.TELEPHONY_SERVICE);
                 access.ConnectWithJSON("json", m_history.GetJSON());
+                response = access.GetResponse();
+                if (!response.contains("SUCCESS 101")) return null;
+
+                List<ImageData> images = m_history.GetNewImages();
+                for (ImageData data: images) {
+                    File file = new File(data.filepath);
+                    if (!file.exists()) continue;
+                    access.UploadFile("upload-image", file.getAbsolutePath(),
+                            data.history_id, settings.getString("Email", ""), settings.getString("Password", ""), telephonyManager.getDeviceId());
+                    response = access.GetResponse();
+                    if (!response.contains("SUCCESS 101")) return null;
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            response = access.GetResponse();
             return null;
         }
         @Override
         protected void onPostExecute(Void v) {
             //Toast.makeText(HistoryActivity.this, response, Toast.LENGTH_LONG).show();
             //((TextView)findViewById(R.id.testWebView)).setText(response);
-            if (response.contains("SUCCESS 101")) m_history.SetUpdateAll();
+            if (response.contains("SUCCESS 101")) {
+                m_history.SetUpdateAll();
+                m_history.SetUpdateAllImages();
+            }
         }
     }
 
@@ -86,6 +118,7 @@ public class HistoryActivity extends ActionBarActivity implements GPSListener {
         int id = item.getItemId();
         if (id == R.id.action_clearHistory) {
             m_history.DeleteAll();
+            PictureManager.DeleteAllImages();
             ShowData();
             return true;
         }

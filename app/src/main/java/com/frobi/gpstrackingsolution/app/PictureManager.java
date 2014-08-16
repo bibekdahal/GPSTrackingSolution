@@ -15,7 +15,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class PictureManager {
     static final int REQUEST_TAKE_PHOTO = 1;
@@ -48,14 +50,14 @@ public class PictureManager {
         activity.startActivityForResult(i, REQUEST_LOAD_PHOTO);
     }
 
-    public static void Result(Context context, int requestCode, int resultCode, Intent data) {
+    public static String Result(Context context, int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_LOAD_PHOTO) {
             if (resultCode == Activity.RESULT_OK && data != null) {
                 Uri selectedImage = data.getData();
-                if (selectedImage==null) return;
+                if (selectedImage==null) return "";
                 String[] filePathColumn = {MediaStore.Images.Media.DATA};
                 Cursor cursor = context.getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-                if (cursor==null) return;
+                if (cursor==null) return "";
                 cursor.moveToFirst();
                 int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
                 String picturePath = cursor.getString(columnIndex);
@@ -70,18 +72,23 @@ public class PictureManager {
                 new File(dst.getParent()).mkdirs();
                 try {
                     Copy(src, dst);
+                    return src.getAbsolutePath();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-            return;
+            return "";
         }
 
-        if (m_lastImageFileName.equals("")) return;
-        if (requestCode == REQUEST_TAKE_PHOTO && resultCode != Activity.RESULT_OK) {
-            new File(m_lastImageFileName).delete();
-            m_lastImageFileName = "";
+        if (m_lastImageFileName.equals("")) return "";
+        if (requestCode == REQUEST_TAKE_PHOTO) {
+            if (resultCode != Activity.RESULT_OK) {
+                new File(m_lastImageFileName).delete();
+                m_lastImageFileName = "";
+            }
+            else return m_lastImageFileName;
         }
+        return "";
     }
 
     public static void Copy(File src, File dst) throws IOException {
@@ -92,5 +99,30 @@ public class PictureManager {
         inChannel.transferTo(0, inChannel.size(), outChannel);
         inStream.close();
         outStream.close();
+    }
+
+    public static List<File> GetAllImages() {
+        return GetAllFiles(new File(IMAGE_DIRECTORY));
+    }
+    public static List<File> GetAllFiles(File parentDir) {
+        ArrayList<File> inFiles = new ArrayList<File>();
+        File[] files = parentDir.listFiles();
+        if (files==null) return null;
+        for (File file : files) {
+            if (file.isDirectory()) {
+                inFiles.addAll(GetAllFiles(file));
+            } else {
+                inFiles.add(file);
+            }
+        }
+        return inFiles;
+    }
+
+    public static void DeleteAllImages() {
+        List<File> files = GetAllImages();
+        for (File file:files) {
+            if (file.exists())
+                file.delete();
+        }
     }
 }
