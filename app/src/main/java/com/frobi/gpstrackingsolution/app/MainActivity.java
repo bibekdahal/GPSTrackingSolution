@@ -5,11 +5,13 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.graphics.Picture;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.PopupMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,6 +34,8 @@ import java.text.SimpleDateFormat;
 
 
 public class MainActivity extends FragmentActivity implements GPSListener{
+    PopupMenu m_imageMenu;
+
     GPSTracker m_gpsTracker;
     private boolean m_isBound;
 
@@ -43,8 +47,15 @@ public class MainActivity extends FragmentActivity implements GPSListener{
     private void UpdateUI()
     {
         Button connectBtn = (Button) findViewById(R.id.serviceStartStop);
-        if (GPSTracker.IsRunning()) connectBtn.setText(STOP_TEXT);
-        else connectBtn.setText(START_TEXT);
+        ImageButton takePhotoBtn = (ImageButton) findViewById(R.id.takePhoto);
+        if (GPSTracker.IsRunning()) {
+            connectBtn.setText(STOP_TEXT);
+            takePhotoBtn.setEnabled(true);
+        }
+        else {
+            connectBtn.setText(START_TEXT);
+            takePhotoBtn.setEnabled(false);
+        }
     }
 
     @Override
@@ -73,9 +84,25 @@ public class MainActivity extends FragmentActivity implements GPSListener{
         });
 
         ImageButton takePhotoBtn = (ImageButton) findViewById(R.id.takePhoto);
+        m_imageMenu = new PopupMenu(this, takePhotoBtn);
+        m_imageMenu.getMenu().add("Take Photo");
+        m_imageMenu.getMenu().add("Select Existing Photo");
+        m_imageMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                if (menuItem.getTitle()==("Take Photo"))
+                {
+                    PictureManager.TakePicture(MainActivity.this);
+                    return true;
+                }
+                PictureManager.SelectImage(MainActivity.this);
+                return true;
+            }
+        });
         takePhotoBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                PictureManager.TakePicture(MainActivity.this);
+                m_imageMenu.show();
+                //PictureManager.TakePicture(MainActivity.this);
             }
         });
 
@@ -266,6 +293,6 @@ public class MainActivity extends FragmentActivity implements GPSListener{
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        PictureManager.Result(requestCode, resultCode, data);
+        PictureManager.Result(this, requestCode, resultCode, data);
     }
 }

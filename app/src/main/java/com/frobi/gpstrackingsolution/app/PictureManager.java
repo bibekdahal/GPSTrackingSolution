@@ -2,18 +2,24 @@ package com.frobi.gpstrackingsolution.app;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class PictureManager {
     static final int REQUEST_TAKE_PHOTO = 1;
+    static final int REQUEST_LOAD_PHOTO = 2;
     static final String IMAGE_DIRECTORY = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/GPSTrackerPhotos/";
 
     private static String m_lastImageFileName = "";
@@ -37,12 +43,54 @@ public class PictureManager {
         return true;
     }
 
-    public static void Result(int requestCode, int resultCode, Intent data) {
+    public static void SelectImage(Activity activity) {
+        Intent i = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        activity.startActivityForResult(i, REQUEST_LOAD_PHOTO);
+    }
+
+    public static void Result(Context context, int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_LOAD_PHOTO) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                Uri selectedImage = data.getData();
+                if (selectedImage==null) return;
+                String[] filePathColumn = {MediaStore.Images.Media.DATA};
+                Cursor cursor = context.getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+                if (cursor==null) return;
+                cursor.moveToFirst();
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                String picturePath = cursor.getString(columnIndex);
+                cursor.close();
+
+                File src = new File(picturePath);
+                File dst = new File(IMAGE_DIRECTORY+src.getName());
+                int i=0;
+                while (dst.exists())
+                {dst = new File(IMAGE_DIRECTORY+src.getName()+i); i++;}
+
+                new File(dst.getParent()).mkdirs();
+                try {
+                    Copy(src, dst);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return;
+        }
+
         if (m_lastImageFileName.equals("")) return;
-        if (requestCode != 100 || resultCode != Activity.RESULT_OK) {
+        if (requestCode == REQUEST_TAKE_PHOTO && resultCode != Activity.RESULT_OK) {
             new File(m_lastImageFileName).delete();
             m_lastImageFileName = "";
         }
+    }
 
+    public static void Copy(File src, File dst) throws IOException {
+        FileInputStream inStream = new FileInputStream(src);
+        FileOutputStream outStream = new FileOutputStream(dst);
+        FileChannel inChannel = inStream.getChannel();
+        FileChannel outChannel = outStream.getChannel();
+        inChannel.transferTo(0, inChannel.size(), outChannel);
+        inStream.close();
+        outStream.close();
     }
 }
