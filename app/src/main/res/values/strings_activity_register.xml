@@ -9,7 +9,7 @@
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="error_incorrect_email">This email is not registered</string>
+    <string name="error_incorrect_email">This email could not be registered</string>
     <string name="error_field_required">This field is required</string>
     <string name="action_sign_in_long">Sign in or Register</string>
 </resources>

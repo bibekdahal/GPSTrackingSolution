@@ -5,12 +5,14 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -174,10 +176,17 @@ public class RegisterActivity extends Activity{
         @Override
         protected Integer doInBackground(Void... params) {
             try {
+                TelephonyManager telephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+                String imei = telephonyManager.getDeviceId();
                 WebAccess access = new WebAccess();
-                access.Connect("check-email-password", m_email, m_password, "000");
+                access.Connect("check-email-password", m_email, m_password, imei);
                 String response = access.GetResponse();
-                if (response.contains("UNREGISTERED")) return 1;
+                if (response.contains("UNREGISTERED")) {
+                    access.Connect("register", m_email, m_password, imei);
+                    response = access.GetResponse();
+                    if (response.contains("REGISTERED SUCCESFULLY")) return 3;
+                    return 1;
+                }
                 else if (response.contains("REGISTERED BUT INVALID")) return 2;
                 else if (response.contains("REGISTERED AND VALID")) return 0;
                 else return -1;
@@ -190,9 +199,14 @@ public class RegisterActivity extends Activity{
         @Override
         protected void onPostExecute(final Integer retCode) {
             m_authTask = null;
-            if (retCode!=0) showProgress(false);
+            if (retCode!=0 && retCode!=3) showProgress(false);
 
-            if (retCode==0) {
+            if (retCode==0 || retCode==3) {
+                String message;
+                if (retCode==0) message="Logged In Succesfully";
+                else message="Registered Succesfully";
+                Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_SHORT).show();
+
                 SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
                 SharedPreferences.Editor editor = settings.edit();
                 editor.putString("Email", m_email);

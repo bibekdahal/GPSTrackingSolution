@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.telephony.TelephonyManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -163,10 +164,12 @@ public class GPSHistory extends SQLiteOpenHelper {
         JSONObject parent = new JSONObject();
         JSONArray array = new JSONArray();
         SharedPreferences settings = m_context.getSharedPreferences(RegisterActivity.PREFS_NAME, 0);
+        TelephonyManager telephonyManager = (TelephonyManager)m_context.getSystemService(Context.TELEPHONY_SERVICE);
         try {
             JSONObject user = new JSONObject();
             user.put("Email", settings.getString("Email", ""));
             user.put("Password", settings.getString("Password", ""));
+            user.put("PhoneId", telephonyManager.getDeviceId());
             parent.put("User", user);
         } catch (JSONException e) {
             e.printStackTrace();
