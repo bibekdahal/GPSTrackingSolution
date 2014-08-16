@@ -8,8 +8,12 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -44,6 +48,17 @@ class WebAccess
         Connect(addr, nameValuePairs);
     }
 
+    public void ConnectWithJSON(String addr, String json) throws IOException {
+        String url = HOST + addr;
+        m_httpclient = new DefaultHttpClient();
+        m_request = new HttpPost(url);
+        StringEntity se = new StringEntity(json);
+        se.setContentType("application/json;charset=UTF-8");
+        se.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, "application/json;charset=UTF-8"));
+        m_request.setEntity(se);
+        m_response = m_httpclient.execute(m_request);
+    }
+
     public String GetResponse() {
         try {
             BufferedReader rd = new BufferedReader(new InputStreamReader(m_response.getEntity().getContent()));
@@ -52,7 +67,9 @@ class WebAccess
             while ((line = rd.readLine()) != null)
                 stringBuilder.append(line).append("\n");
             return stringBuilder.toString();
-        } catch (Exception ignored) {}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return "";
     }
 }

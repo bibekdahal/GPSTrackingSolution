@@ -1,18 +1,22 @@
 package com.frobi.gpstrackingsolution.app;
 
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import android.widget.TableRow.LayoutParams;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class HistoryActivity extends ActionBarActivity implements GPSListener {
@@ -37,10 +41,38 @@ public class HistoryActivity extends ActionBarActivity implements GPSListener {
             }
         });
 
+        findViewById(R.id.syncHistory).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new PostJSON().execute();
+                ShowData();
+            }
+        });
+
         if (m_tracker != null && GPSTracker.IsRunning())
             m_tracker.SetListener2(this);
     }
 
+    private class PostJSON extends AsyncTask<Void, Void, Void> {
+        private String response;
+        @Override
+        protected Void doInBackground(Void... voids) {
+            WebAccess access = new WebAccess();
+            try {
+                access.ConnectWithJSON("json", m_history.GetJSON());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            response = access.GetResponse();
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void v) {
+            //Toast.makeText(HistoryActivity.this, response, Toast.LENGTH_LONG).show();
+            //((TextView)findViewById(R.id.testWebView)).setText(response);
+            if (response.contains("SUCCESS 101")) m_history.SetUpdateAll();
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

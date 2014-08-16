@@ -15,19 +15,35 @@
         android:layout_height="wrap_content"
         style="@style/Button"
         android:text="Refresh"/>
+
+    <Button
+        android:id="@+id/syncHistory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Button"
+        android:text="Sync"/>
+
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/testWebView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </ScrollView>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <TableLayout
             android:id="@+id/historyTable"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:padding="10dp"
             android:shrinkColumns="*"
-            android:stretchColumns="*" >
-        </TableLayout>
+            android:stretchColumns="*"/>
     </ScrollView>
+
 
 </LinearLayout>
