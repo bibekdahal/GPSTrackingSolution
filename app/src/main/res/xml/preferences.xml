@@ -39,4 +39,11 @@
             android:inputType="phone"
             android:title="Emergency Phone No. #4" />
     </PreferenceCategory>
+
+    <PreferenceCategory android:title="Emergency Message">
+        <EditTextPreference
+            android:defaultValue="HELP"
+            android:key="panicMessage"
+            android:inputType="textMultiLine" />
+    </PreferenceCategory>
 </PreferenceScreen>

@@ -87,6 +87,13 @@ public class MainActivity extends FragmentActivity implements GPSListener{
     private Marker m_marker = null;
     public void DisplayCurrentLocation(){
         if (!m_isBound) { StartService(); return; }
+        if (m_panicOnNextUpdate) {
+            GPSData gspdata = new GPSData(m_gpsTracker.GetLastLatitude(), m_gpsTracker.GetLastLongitude(), m_gpsTracker.GetLastSpeed(),
+                    m_gpsTracker.GetLastDirection(), m_gpsTracker.GetLastTime());
+            SMSManager.Panic(this, gspdata);
+            m_panicOnNextUpdate = false;
+        }
+
         String msg;
         if (m_gpsTracker.Update())
         {
@@ -234,8 +241,17 @@ public class MainActivity extends FragmentActivity implements GPSListener{
         UnbindService();
     }
 
+    private boolean m_panicOnNextUpdate=false;
     public void PanicButton_Click(View view) {
-        Toast.makeText(this, "PANICKED", Toast.LENGTH_SHORT).show();
+        if (!GPSTracker.IsRunning() || !m_isBound) {
+            m_panicOnNextUpdate = true;
+            StartService();
+            return;
+        }
+        m_gpsTracker.Update();
+        GPSData gspdata = new GPSData(m_gpsTracker.GetLastLatitude(), m_gpsTracker.GetLastLongitude(), m_gpsTracker.GetLastSpeed(),
+                m_gpsTracker.GetLastDirection(), m_gpsTracker.GetLastTime());
+        SMSManager.Panic(this, gspdata);
     }
 
     public void LogOut() {

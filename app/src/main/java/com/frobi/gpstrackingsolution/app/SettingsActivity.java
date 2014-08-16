@@ -35,6 +35,7 @@ public class SettingsActivity extends PreferenceActivity  implements SharedPrefe
         bindPreferenceSummaryToValue(findPreference("emergencyno2"));
         bindPreferenceSummaryToValue(findPreference("emergencyno3"));
         bindPreferenceSummaryToValue(findPreference("emergencyno4"));
+        bindPreferenceSummaryToValue(findPreference("panicMessage"));
     }
 
     private Preference.OnPreferenceChangeListener prefListener = new Preference.OnPreferenceChangeListener() {
@@ -94,5 +95,10 @@ public class SettingsActivity extends PreferenceActivity  implements SharedPrefe
     public static boolean GetBoolSetting(String key, boolean defaultValue, Context context) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
         return sharedPref.getBoolean(key, defaultValue);
+    }
+
+    public static String GetStringSetting(String key, String defaultValue, Context context) {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPref.getString(key, defaultValue);
     }
 }
